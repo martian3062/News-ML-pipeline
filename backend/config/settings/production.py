@@ -8,14 +8,16 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 # ─── Database ───────────────────────────────────────────────
-# Use Render's DATABASE_URL for PostgreSQL
-DATABASES = {
-    'default': dj_database_url.config(
-        default=env('DATABASE_URL', default=''),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+# Use Render's DATABASE_URL for PostgreSQL, fallback to base.py SQLite otherwise
+_db_url = env('DATABASE_URL', default='')
+if _db_url:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=_db_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
 
 # ─── CSRF/Security ───────────────────────────────────────────
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
