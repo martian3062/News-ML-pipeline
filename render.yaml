@@ -6,6 +6,8 @@ services:
     buildCommand: "./build.sh"
     startCommand: "cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.10.12"
       - key: DJANGO_SETTINGS_MODULE
         value: "config.settings.production"
       - key: DATABASE_URL
