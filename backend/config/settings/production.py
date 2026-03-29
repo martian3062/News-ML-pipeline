@@ -5,7 +5,7 @@ DEBUG = False
 
 # ─── Allowed Hosts ───────────────────────────────────────────
 # Whitelist Render domain and any custom domain
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["ai-news-fvca.onrender.com", "news-llm.netlify.app"])
 
 # ─── Database ───────────────────────────────────────────────
 # Use Render's DATABASE_URL for PostgreSQL
@@ -28,7 +28,5 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOWED_ORIGINS = [
     "https://news-llm.netlify.app",
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3001",
 ]
+CORS_ALLOW_ALL_ORIGINS = False # Secure production
