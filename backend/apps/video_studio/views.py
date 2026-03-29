@@ -9,14 +9,22 @@ from rest_framework import status
 from apps.news.models import Article
 from apps.video_studio.pipeline import generate_news_video
 
+from rest_framework.permissions import AllowAny
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 logger = logging.getLogger(__name__)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class GenerateVideoView(APIView):
     """
     POST /api/video-studio/generate/
     Accepts: {"article_slug": "..."}
     Returns: {"video_url": "/api/video-studio/stream/news_video_....mp4"}
     """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
     def post(self, request, *args, **kwargs):
         article_slug = request.data.get("article_slug")
         if not article_slug:
@@ -26,7 +34,8 @@ class GenerateVideoView(APIView):
             article = Article.objects.get(slug=article_slug)
         except Article.DoesNotExist:
             # Fallback: Create a virtual/demo article if slug is 'isro-one' or similar
-            if "isro" in article_slug or "isoro" in article_slug:
+            slug_lower = (article_slug or "").lower()
+            if "isro" in slug_lower or "isoro" in slug_lower:
                 from django.utils.timezone import now
                 from apps.news.models import Category
                 tech_cat, _ = Category.objects.get_or_create(name="Technology", defaults={"slug": "technology"})
