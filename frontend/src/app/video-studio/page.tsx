@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import api from "@/lib/api";
 
 export default function VideoStudio() {
     const [status, setStatus] = useState<"idle" | "loading" | "complete" | "error">("idle");
@@ -17,7 +18,6 @@ export default function VideoStudio() {
         setVideoUrl(null);
         setErrorMessage("");
 
-        // Simulate dynamic loading steps for the UI (the actual POST is synchronous and takes 30s)
         const loadingSteps = [
             "Prompting Groq (Llama-3.3-70B) for Script Generation...",
             "Synthesizing Audio via Edge TTS...",
@@ -33,32 +33,28 @@ export default function VideoStudio() {
                 setLoadingMsg(loadingSteps[i]);
                 i++;
             }
-        }, 8000); // Shift msg every 8s
+        }, 8000);
 
         try {
-            const res = await fetch("http://127.0.0.1:8001/api/video-studio/generate/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ article_slug: demoArticleSlug })
-            });
+            const res = await api.post("/api/video-studio/generate/", { 
+                article_slug: demoArticleSlug 
+            }, { timeout: 60000 }); // Longer timeout for video generation
 
             clearInterval(interval);
-            const data = await res.json();
-
-            if (res.ok) {
-                setVideoUrl(`http://127.0.0.1:8001${data.video_url}`);
+            
+            if (res.data.video_url) {
+                // Ensure the URL is absolute for the video player
+                const baseUrl = api.defaults.baseURL || "";
+                setVideoUrl(`${baseUrl}${res.data.video_url}`);
                 setStatus("complete");
             } else {
-                console.error("Video Generation Error:", data);
-                setErrorMessage(data.error || "Failed to generate video.");
+                setErrorMessage("Failed to generate video.");
                 setStatus("error");
             }
         } catch (error: any) {
             clearInterval(interval);
-            console.error("Network Error:", error);
-            setErrorMessage("Failed to connect to backend AI server.");
+            console.error("Video Generation Error:", error);
+            setErrorMessage(error.response?.data?.error || "Failed to connect to backend AI server.");
             setStatus("error");
         }
     };

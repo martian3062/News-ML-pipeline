@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Bell, Menu, X, Zap, Globe2, TrendingUp, Newspaper } from 'lucide-react';
+import { Search, Bell, Menu, X, Zap, Globe2, TrendingUp, Newspaper, Play } from 'lucide-react';
 import Link from 'next/link';
 
 const NAV_LINKS = [
   { label: 'Home', href: '/', icon: Newspaper },
   { label: 'Trending', href: '/#trending', icon: TrendingUp },
   { label: 'Navigator', href: '/#features', icon: Globe2 },
+  { label: 'AI Video', href: '/video-studio', icon: Play },
   { label: 'Story Arcs', href: '/#concierge', icon: Zap },
 ];
 
