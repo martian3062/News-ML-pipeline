@@ -29,53 +29,53 @@ class GenerateVideoView(APIView):
         return Response({"message": "Generate endpoint ready. Use POST."}, status=200)
 
     def post(self, request, *args, **kwargs):
-        logger.info(f"POST request to GenerateVideoView from {request.META.get('HTTP_ORIGIN')}")
-        logger.info(f"Host: {request.get_host()}, Path: {request.path}")
-        logger.info(f"Data: {request.data}")
-        
-        article_slug = request.data.get("article_slug")
-        if not article_slug:
-            return Response({"error": "article_slug is required."}, status=status.HTTP_400_BAD_REQUEST)
-            
         try:
-            article = Article.objects.get(slug=article_slug)
-        except Article.DoesNotExist:
-            # Fallback: Create a virtual/demo article if slug is 'isro-one' or similar
-            slug_lower = (article_slug or "").lower()
-            if "isro" in slug_lower or "isoro" in slug_lower:
-                from django.utils.timezone import now
-                from apps.news.models import Category
-                tech_cat, _ = Category.objects.get_or_create(name="Technology", defaults={"slug": "technology"})
-                article = Article.objects.create(
-                    title="ISRO's Historic Mission: One for the Ages",
-                    slug=article_slug,
-                    content="The Indian Space Research Organisation (ISRO) has achieved a new milestone in space exploration. This mission represents a significant leap forward for autonomous space operations and deep space communication.",
-                    summary="ISRO achieves historic milestone in autonomous space mission.",
-                    source_name="NewsAI Demo",
-                    category=tech_cat,
-                    published_at=now()
-                )
-                logger.info(f"Created virtual demo article for slug: {article_slug}")
-            else:
-                return Response({"error": f"Article with slug '{article_slug}' not found. Please provide a valid slug."}, status=status.HTTP_404_NOT_FOUND)
+            logger.info(f"POST request to GenerateVideoView from {request.META.get('HTTP_ORIGIN')}")
+            logger.info(f"Host: {request.get_host()}, Path: {request.path}")
+            logger.info(f"Data: {request.data}")
             
-        # Check if a video for this article already exists
-        videos_dir = os.path.join(settings.MEDIA_ROOT, "videos")
-        if os.path.exists(videos_dir):
-            for file in os.listdir(videos_dir):
-                if file.startswith(f"news_video_{article_slug}") and file.endswith(".mp4"):
-                    # Point to the streaming endpoint instead of direct media URL
-                    video_url = f"/api/video-studio/stream/{file}"
-                    logger.info(f"Returning existing video for {article_slug}: {video_url}")
-                    return Response({
-                        "message": "Existing video found.",
-                        "video_url": video_url,
-                        "cached": True
-                    }, status=status.HTTP_200_OK)
+            article_slug = request.data.get("article_slug")
+            if not article_slug:
+                return Response({"error": "article_slug is required."}, status=status.HTTP_400_BAD_REQUEST)
+                
+            try:
+                article = Article.objects.get(slug=article_slug)
+            except Article.DoesNotExist:
+                # Fallback: Create a virtual/demo article if slug is 'isro-one' or similar
+                slug_lower = (article_slug or "").lower()
+                if "isro" in slug_lower or "isoro" in slug_lower:
+                    from django.utils.timezone import now
+                    from apps.news.models import Category
+                    tech_cat, _ = Category.objects.get_or_create(name="Technology", defaults={"slug": "technology"})
+                    article = Article.objects.create(
+                        title="ISRO's Historic Mission: One for the Ages",
+                        slug=article_slug,
+                        content="The Indian Space Research Organisation (ISRO) has achieved a new milestone in space exploration. This mission represents a significant leap forward for autonomous space operations and deep space communication.",
+                        summary="ISRO achieves historic milestone in autonomous space mission.",
+                        source_name="NewsAI Demo",
+                        category=tech_cat,
+                        published_at=now()
+                    )
+                    logger.info(f"Created virtual demo article for slug: {article_slug}")
+                else:
+                    return Response({"error": f"Article with slug '{article_slug}' not found. Please provide a valid slug."}, status=status.HTTP_404_NOT_FOUND)
+                
+            # Check if a video for this article already exists
+            videos_dir = os.path.join(settings.MEDIA_ROOT, "videos")
+            if os.path.exists(videos_dir):
+                for file in os.listdir(videos_dir):
+                    if file.startswith(f"news_video_{article_slug}") and file.endswith(".mp4"):
+                        # Point to the streaming endpoint instead of direct media URL
+                        video_url = f"/api/video-studio/stream/{file}"
+                        logger.info(f"Returning existing video for {article_slug}: {video_url}")
+                        return Response({
+                            "message": "Existing video found.",
+                            "video_url": video_url,
+                            "cached": True
+                        }, status=status.HTTP_200_OK)
 
-        # Synchronously generate the video
-        logger.info(f"API Triggered: Generating video for {article_slug}...")
-        try:
+            # Synchronously generate the video
+            logger.info(f"API Triggered: Generating video for {article_slug}...")
             video_path = generate_news_video(article_slug)
             if not video_path:
                 return Response({"error": "Video pipeline failed to generate media."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -91,8 +91,13 @@ class GenerateVideoView(APIView):
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
-            logger.error(f"GenerateVideoView Error: {e}")
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(f"GenerateVideoView Top-Level Error: {e}\n{tb}")
+            return Response({
+                "error": str(e),
+                "traceback": tb
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class VideoStreamView(APIView):
