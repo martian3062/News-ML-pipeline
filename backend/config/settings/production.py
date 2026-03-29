@@ -1,7 +1,7 @@
 import dj_database_url
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 # ─── Allowed Hosts ───────────────────────────────────────────
 # Whitelist Render domain and any custom domain
