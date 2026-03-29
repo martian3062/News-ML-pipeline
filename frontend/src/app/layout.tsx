@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import NavbarWrapper from "@/components/layout/NavbarWrapper";
+import { ModalProvider } from "@/context/ModalContext";
 
 export const metadata: Metadata = {
   title: "NewsAI — AI-Native Business Intelligence",
@@ -14,7 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ModalProvider>
+          <NavbarWrapper />
+          {children}
+        </ModalProvider>
+      </body>
     </html>
   );
 }

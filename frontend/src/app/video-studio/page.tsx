@@ -9,8 +9,7 @@ export default function VideoStudio() {
     const [loadingMsg, setLoadingMsg] = useState("");
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState("");
-
-    const demoArticleSlug = "isro-successfully-tests-reusable-launch-vehicle-in-orbital-return-mission";
+    const [articleSlug, setArticleSlug] = useState("isro-successfully-tests-reusable-launch-vehicle-in-orbital-return-mission");
 
     const generateVideo = async () => {
         setStatus("loading");
@@ -37,7 +36,7 @@ export default function VideoStudio() {
 
         try {
             const res = await api.post("/api/video-studio/generate/", { 
-                article_slug: demoArticleSlug 
+                article_slug: articleSlug 
             }, { timeout: 60000 }); // Longer timeout for video generation
 
             clearInterval(interval);
@@ -82,9 +81,14 @@ export default function VideoStudio() {
                             
                             <div style={{ marginBottom: '32px' }}>
                                 <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>Target Article Slug</label>
-                                <div className="glass-input" style={{ width: '100%', wordBreak: 'break-all', opacity: 0.8 }}>
-                                    {demoArticleSlug}
-                                </div>
+                                <input 
+                                    type="text"
+                                    value={articleSlug}
+                                    onChange={(e) => setArticleSlug(e.target.value)}
+                                    className="glass-input" 
+                                    style={{ width: '100%', wordBreak: 'break-all', outline: 'none' }}
+                                    placeholder="Enter article-slug-here"
+                                />
                             </div>
 
                             <button
@@ -147,6 +151,8 @@ export default function VideoStudio() {
                                     src={videoUrl || undefined}
                                     controls
                                     autoPlay
+                                    preload="auto"
+                                    playsInline
                                     style={{ width: '100%', height: '100%', objectFit: 'contain', maxHeight: '600px', background: 'rgba(0,0,0,0.05)' }}
                                 />
                                 <div style={{ position: 'absolute', top: '24px', right: '24px', background: 'var(--glass-bg)', backdropFilter: 'blur(12px)', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 700, color: 'var(--accent-crimson)', border: '1px solid var(--glass-border)', boxShadow: 'var(--shadow-sm)' }}>

@@ -8,9 +8,9 @@ import {
   Zap, TrendingUp, ChevronRight, Play, Bot, X,
   Eye, ExternalLink, Clock
 } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
+import { useModals } from '@/context/ModalContext';
 import NewsCard from '@/components/news/NewsCard';
-import { fetchArticles, sendConciergeMessage } from '@/lib/api';
+import { fetchArticles } from '@/lib/api';
 import type { Article } from '@/lib/api';
 
 // Dynamic import for R3F (SSR incompatible)
@@ -252,298 +252,11 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
   );
 }
 
-// ─── Sign In Modal ───────────────────────────────────────
-function SignInModal({ onClose }: { onClose: () => void }) {
-  return (
-    <motion.div
-      className="modal-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
-      <motion.div
-        className="modal-content"
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.98 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className="modal-close" onClick={onClose}>
-          <X size={16} />
-        </button>
-
-        <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: 16,
-            background: 'var(--gradient-primary)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 16px',
-            fontSize: 22, fontWeight: 800, color: '#fff',
-          }}>AI</div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>
-            Welcome to <span className="text-gradient">NewsAI</span>
-          </h2>
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-            Sign in to personalize your news experience
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <input
-            className="glass-input"
-            type="email"
-            placeholder="Email address"
-            style={{ width: '100%' }}
-          />
-          <input
-            className="glass-input"
-            type="password"
-            placeholder="Password"
-            style={{ width: '100%' }}
-          />
-          <button className="btn-primary" style={{
-            width: '100%', justifyContent: 'center', padding: '14px 24px', fontSize: 15, marginTop: 4,
-          }}>
-            Sign In
-          </button>
-        </div>
-
-        <p style={{
-          textAlign: 'center', marginTop: 20,
-          fontSize: 13, color: 'var(--text-tertiary)',
-        }}>
-          Don&apos;t have an account?{' '}
-          <span style={{ color: 'var(--accent-crimson)', fontWeight: 600, cursor: 'pointer' }}>
-            Create one for free
-          </span>
-        </p>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ─── Demo / Video Modal ──────────────────────────────────
-function DemoModal({ onClose }: { onClose: () => void }) {
-  return (
-    <motion.div
-      className="modal-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
-      <motion.div
-        className="modal-content"
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.98 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 560, textAlign: 'center' }}
-      >
-        <button className="modal-close" onClick={onClose}>
-          <X size={16} />
-        </button>
-
-        {/* Demo video placeholder */}
-        <div style={{
-          borderRadius: 'var(--radius-md)',
-          overflow: 'hidden',
-          background: 'linear-gradient(135deg, rgba(220,38,38,0.08), rgba(225,29,72,0.06))',
-          height: 260,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: 24,
-          position: 'relative',
-        }}>
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse, rgba(220,38,38,0.1) 0%, transparent 70%)',
-          }} />
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{
-              width: 72, height: 72, borderRadius: '50%',
-              background: 'var(--gradient-primary)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 0 40px rgba(220,38,38,0.3)',
-              cursor: 'pointer',
-            }}
-          >
-            <Play size={28} style={{ color: '#fff', marginLeft: 3 }} />
-          </motion.div>
-        </div>
-
-        <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>
-          Platform <span className="text-gradient">Walkthrough</span>
-        </h2>
-        <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>
-          Watch how NewsAI uses Gemini & Groq to synthesize hundreds of news sources
-          into personalized, actionable intelligence — in under 60 seconds.
-        </p>
-
-        <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12,
-          padding: 16, borderRadius: 'var(--radius-md)',
-          background: 'rgba(0,0,0,0.02)',
-        }}>
-          {[
-            { label: 'AI Briefings', time: '0:00' },
-            { label: 'Story Arcs', time: '0:22' },
-            { label: 'Concierge', time: '0:41' },
-          ].map((ch) => (
-            <div key={ch.label} style={{
-              padding: '8px 0', cursor: 'pointer',
-              borderRadius: 'var(--radius-sm)',
-              transition: 'background 0.2s',
-            }}>
-              <p style={{ fontSize: 12, fontWeight: 600 }}>{ch.label}</p>
-              <p style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{ch.time}</p>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ─── Concierge Chat Panel ────────────────────────────────
-function ConciergePanel({ onClose }: { onClose: () => void }) {
-  const [messages, setMessages] = useState([
-    { role: 'bot', text: "Hello! I'm your AI News Concierge. Ask me anything about today's business news, market trends, or get personalized briefings." },
-  ]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sessionId, setSessionId] = useState<string | undefined>();
-
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
-    
-    const userMessage = input;
-    setInput('');
-    setMessages((prev) => [...prev, { role: 'user', text: userMessage }]);
-    setLoading(true);
-
-    try {
-      const { response, session_id } = await sendConciergeMessage(userMessage, sessionId);
-      if (session_id) setSessionId(session_id);
-      
-      setMessages((prev) => [...prev, { role: 'bot', text: response }]);
-    } catch (err) {
-      setMessages((prev) => [...prev, { role: 'bot', text: "I'm sorry, I'm having trouble connecting right now. Please try again later." }]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <motion.div
-      className="modal-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
-      <motion.div
-        className="modal-content"
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 20, scale: 0.98 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 520, padding: 0, display: 'flex', flexDirection: 'column', maxHeight: '80vh' }}
-      >
-        {/* Header */}
-        <div style={{
-          padding: '20px 24px',
-          borderBottom: '1px solid rgba(0,0,0,0.06)',
-          display: 'flex', alignItems: 'center', gap: 12,
-        }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 12,
-            background: 'var(--gradient-primary)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Bot size={20} style={{ color: '#fff' }} />
-          </div>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontWeight: 700, fontSize: 15 }}>AI Concierge</p>
-            <p style={{ fontSize: 12, color: 'var(--accent-green)' }}>● Online</p>
-          </div>
-          <button className="modal-close" onClick={onClose} style={{ position: 'static' }}>
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Messages */}
-        <div style={{
-          flex: 1, padding: 20, overflowY: 'auto',
-          display: 'flex', flexDirection: 'column', gap: 16,
-          minHeight: 300,
-        }}>
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              style={{
-                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                maxWidth: '80%',
-                padding: '12px 16px',
-                borderRadius: msg.role === 'user'
-                  ? '16px 16px 4px 16px'
-                  : '16px 16px 16px 4px',
-                background: msg.role === 'user'
-                  ? 'var(--gradient-primary)'
-                  : 'rgba(0,0,0,0.04)',
-                color: msg.role === 'user' ? '#fff' : 'var(--text-primary)',
-                fontSize: 14, lineHeight: 1.6,
-              }}
-            >
-              {msg.text}
-            </div>
-          ))}
-        </div>
-
-        {/* Input */}
-        <div style={{
-          padding: '16px 20px',
-          borderTop: '1px solid rgba(0,0,0,0.06)',
-          display: 'flex', gap: 8,
-        }}>
-          <input
-            className="glass-input"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Ask about today's news..."
-            style={{ flex: 1 }}
-            disabled={loading}
-          />
-          <button
-            className="btn-primary"
-            onClick={handleSend}
-            style={{ padding: '10px 18px', opacity: loading ? 0.7 : 1 }}
-            disabled={loading}
-          >
-            {loading ? 'Thinking...' : 'Send'}
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-
 export default function HomePage() {
+  const { setShowDemo, setShowConcierge } = useModals();
   const [articles, setArticles] = useState<Article[]>(DEMO_ARTICLES);
   const [loading, setLoading] = useState(true);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-  const [showSignIn, setShowSignIn] = useState(false);
-  const [showDemo, setShowDemo] = useState(false);
-  const [showConcierge, setShowConcierge] = useState(false);
 
   useEffect(() => {
     const loadArticles = async () => {
@@ -570,13 +283,6 @@ export default function HomePage() {
     <>
       <ParticleScene />
       <div className="main-content">
-        <Navbar
-          onSignIn={() => setShowSignIn(true)}
-          onSearch={(q) => {
-            if (q) scrollToSection('trending');
-          }}
-        />
-
         {/* ─── Hero Section ─── */}
         <section style={{
           minHeight: '100vh',
@@ -598,11 +304,12 @@ export default function HomePage() {
             pointerEvents: 'none',
           }} />
 
-          <div className="container" style={{ textAlign: 'center', position: 'relative' }}>
+          <div className="container" style={{ position: 'relative', zIndex: 10 }}>
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.8 }}
+              style={{ textAlign: 'center', maxWidth: 800, margin: '0 auto' }}
             >
               {/* Eyebrow */}
               <motion.div
@@ -612,52 +319,44 @@ export default function HomePage() {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 8,
-                  padding: '6px 16px',
-                  borderRadius: 'var(--radius-full)',
-                  background: 'rgba(220,38,38,0.06)',
-                  border: '1px solid rgba(220,38,38,0.15)',
-                  marginBottom: 32,
-                  fontSize: 13,
-                  fontWeight: 600,
+                  gap: 10,
+                  padding: '8px 16px',
+                  borderRadius: 30,
+                  background: 'rgba(220,38,38,0.08)',
+                  border: '1px solid rgba(220,38,38,0.2)',
                   color: 'var(--accent-crimson)',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  marginBottom: 32,
+                  boxShadow: '0 0 20px rgba(220,38,38,0.1)',
                 }}
               >
-                <Sparkles size={14} />
-                Powered by Gemini 2.0 Flash + Groq
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />
+                NEXT-GEN INTELLIGENCE: LLAMA-4-SCOUT-17B
               </motion.div>
 
               {/* Headline */}
               <h1 style={{
-                fontSize: 'clamp(36px, 6vw, 72px)',
+                fontSize: 'clamp(48px, 8vw, 84px)',
                 fontWeight: 900,
-                lineHeight: 1.1,
-                letterSpacing: '-2px',
+                lineHeight: 0.95,
+                letterSpacing: '-3px',
                 marginBottom: 24,
                 color: 'var(--text-primary)',
               }}>
-                AI-Native{' '}
-                <span className="text-gradient">Business</span>
-                <br />
-                Intelligence
+                Actionable <span className="text-gradient">Intelligence</span> for the Bold.
               </h1>
 
               {/* Subtitle */}
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                style={{
-                  fontSize: 'clamp(16px, 2vw, 20px)',
-                  color: 'var(--text-secondary)',
-                  maxWidth: 640,
-                  margin: '0 auto 40px',
-                  lineHeight: 1.7,
-                }}
-              >
-                Personalized newsrooms, interactive briefings, story arc tracking,
-                and an AI concierge — all synthesized from real-time sources.
-              </motion.p>
+              <p style={{
+                fontSize: 'clamp(16px, 2vw, 20px)',
+                color: 'var(--text-secondary)',
+                maxWidth: 600,
+                margin: '0 auto 48px',
+                lineHeight: 1.6,
+              }}>
+                NewsAI synthesizes global market signals into high-fidelity briefings using the latest Llama-4-Scout models.
+              </p>
 
               {/* CTAs */}
               <motion.div
@@ -668,10 +367,9 @@ export default function HomePage() {
               >
                 <button
                   className="btn-primary"
-                  style={{ padding: '14px 32px', fontSize: 15 }}
+                  style={{ padding: '14px 32px', fontSize: 16 }}
                   onClick={() => scrollToSection('trending')}
                 >
-                  <Sparkles size={16} />
                   Explore Now
                 </button>
                 <button
@@ -928,22 +626,13 @@ export default function HomePage() {
       </div>
 
       {/* ─── Modals ─── */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {selectedArticle && (
           <ArticleModal
             key="article-modal"
             article={selectedArticle}
             onClose={() => setSelectedArticle(null)}
           />
-        )}
-        {showSignIn && (
-          <SignInModal key="signin-modal" onClose={() => setShowSignIn(false)} />
-        )}
-        {showDemo && (
-          <DemoModal key="demo-modal" onClose={() => setShowDemo(false)} />
-        )}
-        {showConcierge && (
-          <ConciergePanel key="concierge-panel" onClose={() => setShowConcierge(false)} />
         )}
       </AnimatePresence>
     </>
