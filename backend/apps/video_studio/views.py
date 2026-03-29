@@ -25,7 +25,14 @@ class GenerateVideoView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    def get(self, request, *args, **kwargs):
+        return Response({"message": "Generate endpoint ready. Use POST."}, status=200)
+
     def post(self, request, *args, **kwargs):
+        logger.info(f"POST request to GenerateVideoView from {request.META.get('HTTP_ORIGIN')}")
+        logger.info(f"Host: {request.get_host()}, Path: {request.path}")
+        logger.info(f"Data: {request.data}")
+        
         article_slug = request.data.get("article_slug")
         if not article_slug:
             return Response({"error": "article_slug is required."}, status=status.HTTP_400_BAD_REQUEST)
