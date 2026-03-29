@@ -31,3 +31,4 @@ psycopg2-binary>=2.9.9
 python-dotenv>=1.0
 gunicorn>=23.0
 whitenoise>=6.8
+dj-database-url>=2.3

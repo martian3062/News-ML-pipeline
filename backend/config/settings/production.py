@@ -1,22 +1,24 @@
-"""
-Production settings — Supabase PostgreSQL.
-"""
+import dj_database_url
 from .base import *
 
 DEBUG = False
 
-# ─── Supabase PostgreSQL ───────────────────────────────────────
+# ─── Allowed Hosts ───────────────────────────────────────────
+# Whitelist Render domain and any custom domain
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+
+# ─── Database ───────────────────────────────────────────────
+# Use Render's DATABASE_URL for PostgreSQL
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DB_NAME", default="postgres"),
-        "USER": env("DB_USER", default="postgres"),
-        "PASSWORD": env("DB_PASSWORD", default=""),
-        "HOST": env("DB_HOST", default="localhost"),
-        "PORT": env("DB_PORT", default="5432"),
-    }
+    'default': dj_database_url.config(
+        default=env('DATABASE_URL', default=''),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
+# ─── CSRF/Security ───────────────────────────────────────────
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://*.onrender.com"])
