@@ -17,6 +17,13 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="django-insecure-dev-key-change-th
 DEBUG = env.bool("DEBUG", default=True)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
+if os.environ.get("RENDER"):
+    DEBUG = False
+    render_external_hostname = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+    if render_external_hostname:
+        ALLOWED_HOSTS.append(render_external_hostname)
+    ALLOWED_HOSTS.append(".onrender.com")
+
 # ─── Installed Apps ────────────────────────────────────────────
 INSTALLED_APPS = [
     # Django defaults
