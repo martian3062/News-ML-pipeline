@@ -11,7 +11,7 @@ def home_view(request):
         "status": "online",
         "project": "NewsAI API",
         "documentation": "https://news-llm.netlify.app/",
-        "version": "1.0.0"
+        "version": "1.0.1"
     })
 
 urlpatterns = [

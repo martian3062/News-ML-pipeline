@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import GenerateVideoView, VideoStreamView
-from .log_view import LogView
+from .diagnostics import LogView
 
 urlpatterns = [
     path('generate/', GenerateVideoView.as_view(), name='generate-video'),

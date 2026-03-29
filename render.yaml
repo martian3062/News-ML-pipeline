@@ -19,7 +19,7 @@ services:
       - key: CSRF_TRUSTED_ORIGINS
         value: "https://*.onrender.com"
       - key: DEBUG
-        value: "False"
+        value: "True"
       - key: GROQ_API_KEY
         sync: false
       - key: PEXELS_API_KEY

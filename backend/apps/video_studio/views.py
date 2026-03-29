@@ -15,6 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class GenerateVideoView(APIView):
     """
