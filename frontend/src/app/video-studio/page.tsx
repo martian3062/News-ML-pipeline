@@ -22,7 +22,7 @@ export default function VideoStudio() {
             "Prompting Groq (Llama-3.3-70B) for Script Generation...",
             "Synthesizing Audio via Edge TTS...",
             "Gathering Contextual Pexels Stock Footage...",
-            "Validating Frames via Groq Vision Model...",
+            "Validating Frames via Llama-4-Scout Vision Model...",
             "Compositing Final Video with FFmpeg...",
             "Finalizing MP4 Render..."
         ];
@@ -98,8 +98,8 @@ export default function VideoStudio() {
                         </div>
                         
                         <div style={{ marginTop: '32px', fontSize: '12px', color: 'var(--text-tertiary)', borderTop: '1px solid var(--glass-border)', paddingTop: '16px' }}>
-                            <p style={{ marginBottom: '8px' }}>⚡ Text Engine: <strong style={{ color: 'var(--accent-crimson)' }}>llama-3.3-70b-versatile</strong></p>
-                            <p>👁 Vision Checks: <strong style={{ color: 'var(--accent-crimson)' }}>llama-3.2-11b-vision-preview</strong></p>
+                            <p style={{ marginBottom: '8px' }}>⚡ Text Engine: <strong style={{ color: 'var(--accent-crimson)' }}>llama-4-scout-17b-16e-instruct</strong></p>
+                            <p>👁 Vision Checks: <strong style={{ color: 'var(--accent-crimson)' }}>llama-4-scout-17b-16e-instruct</strong></p>
                         </div>
                     </div>
 

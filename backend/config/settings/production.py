@@ -29,4 +29,6 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOWED_ORIGINS = [
     "https://news-llm.netlify.app",
     "http://localhost:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
 ]
