@@ -100,6 +100,8 @@ class VideoStreamView(APIView):
     GET /api/video-studio/stream/<filename>/
     Handles Range requests for video seeking.
     """
+    permission_classes = [AllowAny]
+
     def get(self, request, filename, *args, **kwargs):
         path = os.path.join(settings.MEDIA_ROOT, "videos", filename)
         if not os.path.exists(path):
