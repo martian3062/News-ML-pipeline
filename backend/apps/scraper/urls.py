@@ -1,5 +1,6 @@
-"""Scraper URLs — no public endpoints (internal pipeline only)."""
-
 from django.urls import path
+from .views import ScrapeView
 
-urlpatterns = []
+urlpatterns = [
+    path("scrape/", ScrapeView.as_view(), name="scrape"),
+]

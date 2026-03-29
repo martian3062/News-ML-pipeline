@@ -15,7 +15,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="django-insecure-dev-key-change-this")
 DEBUG = env.bool("DEBUG", default=True)
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1", "testserver"])
 
 if os.environ.get("RENDER"):
     DEBUG = False
@@ -126,7 +126,7 @@ AI_CONFIG = {
     },
     "vision_model": {
         "provider": "groq",
-        "model": "llama-3.2-11b-vision-preview",
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
         "api_key": GROQ_API_KEY,
         "max_tokens": 1024,
         "temperature": 0.1,
@@ -164,3 +164,17 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
+
+# ─── FFmpeg Path Management ───────────────────────────────────
+# If ffmpeg is not in PATH, try to find it in common local locations
+import shutil
+if not shutil.which("ffmpeg"):
+    potential_paths = [
+        os.path.expanduser(r"~\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1-full_build\bin"),
+        os.path.expanduser(r"~\AppData\Local\ffmpeg\bin"),
+        r"C:\ffmpeg\bin",
+    ]
+    for p in potential_paths:
+        if os.path.exists(p):
+            os.environ["PATH"] += os.pathsep + p
+            break

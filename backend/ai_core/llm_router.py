@@ -23,7 +23,7 @@ class LLMRouter:
         if not self._text_model:
             config = settings.AI_CONFIG["text_model"]
             self._text_model = ChatGroq(
-                model_name=config["model"],
+                model=config["model"],
                 groq_api_key=config["api_key"],
                 max_tokens=config["max_tokens"],
                 temperature=config["temperature"],
@@ -36,7 +36,7 @@ class LLMRouter:
         if not self._vision_model:
             config = settings.AI_CONFIG["vision_model"]
             self._vision_model = ChatGroq(
-                model_name=config["model"],
+                model=config["model"],
                 groq_api_key=config["api_key"],
                 max_tokens=config["max_tokens"],
                 temperature=config["temperature"],

@@ -21,4 +21,12 @@ DATABASES = {
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["https://*.onrender.com"])
+CSRF_TRUSTED_ORIGINS = [
+    "https://ai-news-fvca.onrender.com",
+    "https://news-llm.netlify.app",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://news-llm.netlify.app",
+    "http://localhost:3000",
+]

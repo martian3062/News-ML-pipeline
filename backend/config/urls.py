@@ -15,6 +15,7 @@ urlpatterns = [
     path("api/story-arc/", include("apps.story_arc.urls")),
     path("api/vernacular/", include("apps.vernacular.urls")),
     path("api/concierge/", include("apps.concierge.urls")),
+    path("api/scraper/", include("apps.scraper.urls")),
 ]
 
 if settings.DEBUG:
