@@ -106,8 +106,44 @@ SIMPLE_JWT = {
 }
 
 # ─── CORS ──────────────────────────────────────────────────────
-CORS_ALLOW_ALL_ORIGINS = True
+# NOTE: CORS_ALLOW_ALL_ORIGINS is SILENTLY IGNORED when CORS_ALLOW_CREDENTIALS=True
+# Use explicit origins or set credentials=False.
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+])
+
+# In production on Render, add the Netlify origin
+if os.environ.get("RENDER"):
+    CORS_ALLOWED_ORIGINS += [
+        "https://news-llm.netlify.app",
+        "http://news-llm.netlify.app",
+    ]
+
 CORS_ALLOW_CREDENTIALS = True
+
+# Allow all common headers + methods for preflight
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 
 # ─── AI Configuration ─────────────────────────────────────────
 GROQ_API_KEY = env("GROQ_API_KEY", default="")

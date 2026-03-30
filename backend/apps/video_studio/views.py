@@ -109,6 +109,27 @@ class VideoStreamView(APIView):
     """
     permission_classes = [AllowAny]
 
+    def _add_cors_headers(self, response, request):
+        """Manually add CORS headers since StreamingHttpResponse bypasses middleware."""
+        origin = request.META.get('HTTP_ORIGIN', '')
+        allowed = [
+            'https://news-llm.netlify.app',
+            'http://localhost:3000',
+            'http://127.0.0.1:3000',
+        ]
+        if origin in allowed:
+            response['Access-Control-Allow-Origin'] = origin
+            response['Access-Control-Allow-Credentials'] = 'true'
+            response['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+            response['Access-Control-Allow-Headers'] = 'Range, Content-Type, Authorization'
+            response['Access-Control-Expose-Headers'] = 'Content-Range, Accept-Ranges, Content-Length'
+        return response
+
+    def options(self, request, *args, **kwargs):
+        """Handle CORS preflight for video streams."""
+        response = Response(status=200)
+        return self._add_cors_headers(response, request)
+
     def get(self, request, filename, *args, **kwargs):
         path = os.path.join(settings.MEDIA_ROOT, "videos", filename)
         if not os.path.exists(path):
@@ -146,4 +167,4 @@ class VideoStreamView(APIView):
             resp['Content-Length'] = str(size)
 
         resp['Accept-Ranges'] = 'bytes'
-        return resp
+        return self._add_cors_headers(resp, request)
