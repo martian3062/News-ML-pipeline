@@ -7,7 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from apps.news.models import Article
-from apps.video_studio.pipeline import generate_news_video
+# NOTE: pipeline import is done lazily inside post() to prevent import-time crashes
+# from apps.video_studio.pipeline import generate_news_video
 
 from rest_framework.permissions import AllowAny
 from django.utils.decorators import method_decorator
@@ -78,6 +79,15 @@ class GenerateVideoView(APIView):
 
             # Synchronously generate the video
             logger.info(f"API Triggered: Generating video for {article_slug}...")
+            try:
+                from apps.video_studio.pipeline import generate_news_video
+            except ImportError as ie:
+                logger.error(f"Pipeline import failed: {ie}")
+                return Response({
+                    "error": f"Video pipeline dependencies not available: {ie}",
+                    "hint": "Ensure edge-tts, ffmpeg, and all media dependencies are installed."
+                }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
             video_path = generate_news_video(article_slug)
             if not video_path:
                 return Response({"error": "Video pipeline failed to generate media."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

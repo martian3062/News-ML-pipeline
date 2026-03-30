@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
 # ─── Middleware ────────────────────────────────────────────────
 MIDDLEWARE = [
+    "config.middleware.CorsAlwaysMiddleware",  # MUST be first — adds CORS even on 500s
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
